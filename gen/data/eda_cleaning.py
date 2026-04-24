@@ -1,5 +1,5 @@
 """
-EDA + Data Cleaning — DoorDash Delivery Dataset
+EDA + Data Cleaning — FastDeliver Delivery Dataset
 Author: gabriel-analytics
 Date: 2026-04-21
 Libraries: pandas, numpy, scipy only (no matplotlib/seaborn)
@@ -14,17 +14,17 @@ from pathlib import Path
 # PATHS
 # ---------------------------------------------------------------------------
 DATA_DIR = Path(r"C:\Users\lineg\semana-ai-data-engineer\gen\data")
-RAW_PATH = DATA_DIR / "doordash_raw.csv"
-CLEAN_PATH = DATA_DIR / "doordash_clean.csv"
+RAW_PATH = DATA_DIR / "fastdeliver_raw.csv"
+CLEAN_PATH = DATA_DIR / "fastdeliver_clean.csv"
 REPORT_PATH = DATA_DIR / "eda_report.md"
 
 STAGE_COLS = [
     "stage_1_order_placed_at",
     "stage_2_restaurant_confirmed_at",
-    "stage_3_dasher_assigned_at",
-    "stage_4_dasher_arrived_restaurant_at",
+    "stage_3_courier_assigned_at",
+    "stage_4_courier_arrived_restaurant_at",
     "stage_5_order_picked_up_at",
-    "stage_6_dasher_near_customer_at",
+    "stage_6_courier_near_customer_at",
     "stage_7_delivered_at",
 ]
 
@@ -71,7 +71,7 @@ print(f"  Loaded: {RAW_PATH}")
 print(f"  Shape:  {df.shape[0]:,} rows x {df.shape[1]} columns")
 
 # Parse datetime columns up front (all stage + created_at columns)
-datetime_cols = ["created_at", "dasher_assigned_at", "pickup_at", "delivered_at"] + STAGE_COLS
+datetime_cols = ["created_at", "courier_assigned_at", "pickup_at", "delivered_at"] + STAGE_COLS
 for col in datetime_cols:
     df[col] = pd.to_datetime(df[col], errors="coerce")
 
@@ -106,7 +106,7 @@ for k, v in stats_raw.items():
         print(f"  {k:<10} {v}")
 
 print(f"\n--- Contagem de Flags ---")
-for flag in ["has_duplicate_flag", "has_timestamp_issue_flag", "has_missing_dasher_flag", "has_outlier_flag"]:
+for flag in ["has_duplicate_flag", "has_timestamp_issue_flag", "has_missing_courier_flag", "has_outlier_flag"]:
     ct = df[flag].sum()
     pct = ct / len(df) * 100
     print(f"  {flag:<35} True={ct:,} ({pct:.1f}%)  False={len(df)-ct:,}")
@@ -124,7 +124,7 @@ profile_shape = df.shape
 profile_null = null_pct[null_pct > 0].copy()
 profile_flags = {
     flag: int(df[flag].sum())
-    for flag in ["has_duplicate_flag", "has_timestamp_issue_flag", "has_missing_dasher_flag", "has_outlier_flag"]
+    for flag in ["has_duplicate_flag", "has_timestamp_issue_flag", "has_missing_courier_flag", "has_outlier_flag"]
 }
 profile_status = df["status"].value_counts().to_dict()
 profile_abgroup = df["ab_group"].value_counts().to_dict()
@@ -181,7 +181,7 @@ if n_ts_issues > 0:
     )
     # Also update stage_7_delivered_at alias columns
     df.loc[mask_ts, "delivered_at"] = df.loc[mask_ts, "stage_7_delivered_at"]
-    df.loc[mask_ts, "dasher_assigned_at"] = df.loc[mask_ts, "stage_3_dasher_assigned_at"]
+    df.loc[mask_ts, "courier_assigned_at"] = df.loc[mask_ts, "stage_3_courier_assigned_at"]
     df.loc[mask_ts, "pickup_at"] = df.loc[mask_ts, "stage_5_order_picked_up_at"]
 
     print(f"  Linhas com timestamps reordenados e delivery_duration_minutes recalculado: {n_ts_issues:,}")
@@ -194,20 +194,20 @@ else:
 # ===========================================================================
 section("ETAPA 4 — TRATAR PEDIDOS SEM ENTREGADOR")
 
-mask_dasher = df["has_missing_dasher_flag"] == True
-n_missing_dasher = mask_dasher.sum()
-n_null_dasher_before = df["dasher_id"].isnull().sum()
-print(f"  Linhas com has_missing_dasher_flag=True: {n_missing_dasher:,}")
-print(f"  Nulos em dasher_id antes da imputacao: {n_null_dasher_before:,}")
+mask_courier = df["has_missing_courier_flag"] == True
+n_missing_courier = mask_courier.sum()
+n_null_courier_before = df["courier_id"].isnull().sum()
+print(f"  Linhas com has_missing_courier_flag=True: {n_missing_courier:,}")
+print(f"  Nulos em courier_id antes da imputacao: {n_null_courier_before:,}")
 
-# Impute dasher_id
-df.loc[mask_dasher & df["dasher_id"].isnull(), "dasher_id"] = "UNASSIGNED"
-# Impute dasher_assigned_at from stage_3
-df.loc[mask_dasher & df["dasher_assigned_at"].isnull(), "dasher_assigned_at"] = \
-    df.loc[mask_dasher & df["dasher_assigned_at"].isnull(), "stage_3_dasher_assigned_at"]
+# Impute courier_id
+df.loc[mask_courier & df["courier_id"].isnull(), "courier_id"] = "UNASSIGNED"
+# Impute courier_assigned_at from stage_3
+df.loc[mask_courier & df["courier_assigned_at"].isnull(), "courier_assigned_at"] = \
+    df.loc[mask_courier & df["courier_assigned_at"].isnull(), "stage_3_courier_assigned_at"]
 
-n_null_dasher_after = df["dasher_id"].isnull().sum()
-print(f"  Nulos em dasher_id apos imputacao:  {n_null_dasher_after:,}")
+n_null_courier_after = df["courier_id"].isnull().sum()
+print(f"  Nulos em courier_id apos imputacao:  {n_null_courier_after:,}")
 
 
 # ===========================================================================
@@ -284,9 +284,9 @@ print("\n--- 6.2 Tempo Medio por Etapa (pedidos entregues) ---")
 def calc_stages(sub: pd.DataFrame) -> pd.Series:
     return pd.Series({
         "Aceite (s2-s1)":    minutes_between(sub["stage_1_order_placed_at"], sub["stage_2_restaurant_confirmed_at"]).mean(),
-        "Preparo (s4-s2)":   minutes_between(sub["stage_2_restaurant_confirmed_at"], sub["stage_4_dasher_arrived_restaurant_at"]).mean(),
-        "Atribuicao (s3-s1)": minutes_between(sub["stage_1_order_placed_at"], sub["stage_3_dasher_assigned_at"]).mean(),
-        "Coleta (s5-s4)":    minutes_between(sub["stage_4_dasher_arrived_restaurant_at"], sub["stage_5_order_picked_up_at"]).mean(),
+        "Preparo (s4-s2)":   minutes_between(sub["stage_2_restaurant_confirmed_at"], sub["stage_4_courier_arrived_restaurant_at"]).mean(),
+        "Atribuicao (s3-s1)": minutes_between(sub["stage_1_order_placed_at"], sub["stage_3_courier_assigned_at"]).mean(),
+        "Coleta (s5-s4)":    minutes_between(sub["stage_4_courier_arrived_restaurant_at"], sub["stage_5_order_picked_up_at"]).mean(),
         "Rota (s7-s5)":      minutes_between(sub["stage_5_order_picked_up_at"], sub["stage_7_delivered_at"]).mean(),
     })
 
@@ -465,11 +465,11 @@ winner_text = "Grupo B (mais rapido)" if (ab_results["significant"] and ab_resul
     "Grupo A (mais rapido)" if (ab_results["significant"] and ab_results["delta_abs"] > 0) else "Sem vencedor definido"
 )
 
-report = f"""# EDA Report — DoorDash Delivery Dataset
+report = f"""# EDA Report — FastDeliver Delivery Dataset
 
 **Data:** 2026-04-21
 **Analista:** gabriel-analytics
-**Dataset:** doordash_raw.csv
+**Dataset:** fastdeliver_raw.csv
 
 ---
 
@@ -498,7 +498,7 @@ report = f"""# EDA Report — DoorDash Delivery Dataset
 |------|-----------------|
 | has_duplicate_flag | {profile_flags['has_duplicate_flag']:,} |
 | has_timestamp_issue_flag | {profile_flags['has_timestamp_issue_flag']:,} |
-| has_missing_dasher_flag | {profile_flags['has_missing_dasher_flag']:,} |
+| has_missing_courier_flag | {profile_flags['has_missing_courier_flag']:,} |
 | has_outlier_flag | {profile_flags['has_outlier_flag']:,} |
 
 ---
@@ -509,7 +509,7 @@ report = f"""# EDA Report — DoorDash Delivery Dataset
 |-------|-----------------|-------------|-----------|
 | Duplicatas (order_id) | {profile_flags['has_duplicate_flag']:,} | Remocao de linhas com has_duplicate_flag=True; keep first | -{n_removed_dup:,} linhas |
 | Timestamps fora de ordem | {profile_flags['has_timestamp_issue_flag']:,} | np.sort nos 7 stage timestamps; recalculo de delivery_duration_minutes | {n_ts_issues:,} linhas corrigidas |
-| Dasher ausente | {profile_flags['has_missing_dasher_flag']:,} | dasher_id imputado com 'UNASSIGNED'; dasher_assigned_at imputado de stage_3 | 0 nulos restantes |
+| Courier ausente | {profile_flags['has_missing_courier_flag']:,} | courier_id imputado com 'UNASSIGNED'; courier_assigned_at imputado de stage_3 | 0 nulos restantes |
 | Outliers (>120 min) | {profile_flags['has_outlier_flag']:,} | Remocao de linhas com has_outlier_flag=True | -{n_outliers:,} linhas |
 
 ---
@@ -581,7 +581,7 @@ Legenda: + = piora/aumento, - = melhora/reducao, -- = primeiro mes (sem comparac
 
 ### Alertas de Qualidade de Dados
 
-- Dasher ausente em {profile_flags['has_missing_dasher_flag']:,} pedidos — imputados com 'UNASSIGNED'; investigar causa raiz no sistema de atribuicao
+- Courier ausente em {profile_flags['has_missing_courier_flag']:,} pedidos — imputados com 'UNASSIGNED'; investigar causa raiz no sistema de atribuicao
 - {profile_flags['has_timestamp_issue_flag']:,} pedidos com timestamps fora de ordem — sugerir validacao no pipeline de ingestao
 - Pedidos `in_progress` ({profile_status.get('in_progress', 0):,}) excluidos das analises temporais — revisar se sao pedidos ainda ativos ou dados incompletos
 - Delivery duration com nulos ({df['delivery_duration_minutes'].isnull().sum()} restantes apos limpeza) correspondem a pedidos cancelados/in_progress sem timestamp de entrega — comportamento esperado

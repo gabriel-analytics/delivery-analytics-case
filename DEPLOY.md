@@ -1,4 +1,4 @@
-# Deploy Guide — DoorDash Analytics Dashboard
+# Deploy Guide — Delivery Analytics Dashboard
 
 ## Streamlit Cloud (Recomendado)
 
@@ -11,7 +11,7 @@
 1. Acesse [share.streamlit.io](https://share.streamlit.io)
 2. Clique em **"New app"**
 3. Conecte sua conta GitHub
-4. Selecione o repositorio: `gabriel-analytics/doordash-analytics-case`
+4. Selecione o repositorio: `gabriel-analytics/delivery-analytics-case`
 5. Branch: `main`
 6. Main file path: `streamlit_app.py`
 7. Clique em **"Deploy!"**
@@ -28,11 +28,11 @@
 pip install -r requirements.txt
 
 # Gerar dados
-python gen/data/generate_doordash.py
+python gen/data/generate_fastdeliver.py
 python gen/data/eda_cleaning.py
 
 # Rodar dbt
-cd dbt_doordash && dbt deps --profiles-dir . && dbt run --profiles-dir . && cd ..
+cd dbt_fastdeliver && dbt deps --profiles-dir . && dbt run --profiles-dir . && cd ..
 
 # Iniciar dashboard
 streamlit run streamlit_app.py

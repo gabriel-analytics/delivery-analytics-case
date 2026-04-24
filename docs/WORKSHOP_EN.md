@@ -1,8 +1,8 @@
-# Workshop DoorDash Analytics — Facilitator Guide
+# Workshop Delivery Analytics — Facilitator Guide
 
 **Duration:** 4 hours | **Level:** Intermediate | **Prerequisites:** Basic Python + SQL
-**Repository:** https://github.com/gabriel-analytics/doordash-analytics-case
-**Dashboard:** https://doordash-analytics-case-hupqbwjyucsrwzsvceqqyw.streamlit.app
+**Repository:** https://github.com/gabriel-analytics/delivery-analytics-case
+**Dashboard:** https://delivery-analytics-case-hupqbwjyucsrwzsvceqqyw.streamlit.app
 
 ---
 
@@ -54,9 +54,9 @@
 
 ---
 
-🇧🇷 "Voce e o Head of Analytics da DoorDash Brasil. Sao 9h de segunda-feira. Seu CEO manda uma mensagem no Slack. A mensagem diz: 'O tempo medio de entrega subiu 15% no ultimo trimestre. O que esta acontecendo?' — so isso. Sem contexto adicional."
+🇧🇷 "Voce e o Head of Analytics da FastDeliver Brasil. Sao 9h de segunda-feira. Seu CEO manda uma mensagem no Slack. A mensagem diz: 'O tempo medio de entrega subiu 15% no ultimo trimestre. O que esta acontecendo?' — so isso. Sem contexto adicional."
 
-🇺🇸 "You are the Head of Analytics at DoorDash Brazil. It is 9am on a Monday. Your CEO sends a message on Slack. The message says: 'Average delivery time went up 15% last quarter. What is going on?' — that is it. No additional context."
+🇺🇸 "You are the Head of Analytics at FastDeliver Brazil. It is 9am on a Monday. Your CEO sends a message on Slack. The message says: 'Average delivery time went up 15% last quarter. What is going on?' — that is it. No additional context."
 
 ---
 
@@ -74,23 +74,23 @@
 
 ---
 
-[FACILITADOR - Storytelling da DoorDash]
+[FACILITADOR - Storytelling da FastDeliver]
 
-🇧🇷 "Antes de responder, deixa eu te contar quem e a DoorDash."
+🇧🇷 "Antes de responder, deixa eu te contar quem e a FastDeliver."
 
-🇺🇸 [FACILITATOR - DoorDash Storytelling] "Before answering, let me tell you who DoorDash is."
-
----
-
-🇧🇷 "A DoorDash e o maior marketplace de delivery de comida dos EUA. Mais de 35 milhoes de pedidos por mes. O modelo de negocio e simples: eles conectam clientes, restaurantes e entregadores — os dashers — e cobram uma comissao de 15% do restaurante em cima de cada pedido. Parece pouco? 15% de cada pizza, hamburguer e sushi pedido em dezenas de cidades todos os dias soma bilhoes."
-
-🇺🇸 "DoorDash is the largest food delivery marketplace in the US. Over 35 million orders per month. The business model is simple: they connect customers, restaurants, and delivery drivers — dashers — and charge a 15% commission from the restaurant on each order. Seems small? 15% of every pizza, burger, and sushi ordered across dozens of cities every day adds up to billions."
+🇺🇸 [FACILITATOR - FastDeliver Storytelling] "Before answering, let me tell you who FastDeliver is."
 
 ---
 
-🇧🇷 "Mas o produto da DoorDash nao e a comida. O produto da DoorDash e a velocidade. A promessa que eles vendem para o cliente e: 'Voce vai receber sua comida rapido, quente, e sem complicacao.' Se eles quebram essa promessa, perdem o cliente."
+🇧🇷 "A FastDeliver e o maior marketplace de delivery de comida dos EUA. Mais de 35 milhoes de pedidos por mes. O modelo de negocio e simples: eles conectam clientes, restaurantes e entregadores — os couriers — e cobram uma comissao de 15% do restaurante em cima de cada pedido. Parece pouco? 15% de cada pizza, hamburguer e sushi pedido em dezenas de cidades todos os dias soma bilhoes."
 
-🇺🇸 "But DoorDash's product is not the food. DoorDash's product is speed. The promise they sell to the customer is: 'You will receive your food fast, hot, and hassle-free.' If they break that promise, they lose the customer."
+🇺🇸 "FastDeliver is the largest food delivery marketplace in the US. Over 35 million orders per month. The business model is simple: they connect customers, restaurants, and delivery drivers — couriers — and charge a 15% commission from the restaurant on each order. Seems small? 15% of every pizza, burger, and sushi ordered across dozens of cities every day adds up to billions."
+
+---
+
+🇧🇷 "Mas o produto da FastDeliver nao e a comida. O produto da FastDeliver e a velocidade. A promessa que eles vendem para o cliente e: 'Voce vai receber sua comida rapido, quente, e sem complicacao.' Se eles quebram essa promessa, perdem o cliente."
+
+🇺🇸 "But FastDeliver's product is not the food. FastDeliver's product is speed. The promise they sell to the customer is: 'You will receive your food fast, hot, and hassle-free.' If they break that promise, they lose the customer."
 
 ---
 
@@ -131,9 +131,9 @@ Delta_Revenue = Delta_Time x Cost_Per_Minute x Orders_Per_Day
 
 ---
 
-🇧🇷 "Cada minuto extra que o dasher passa esperando o pedido ficar pronto custa dinheiro. Estimamos R$0.50 por minuto por entrega — entre incentivos ao dasher e custo de oportunidade. Com 333 pedidos por dia no nosso scope, 2.44 minutos a mais por entrega custam R$12.000 por mes so em custo operacional."
+🇧🇷 "Cada minuto extra que o courier passa esperando o pedido ficar pronto custa dinheiro. Estimamos R$0.50 por minuto por entrega — entre incentivos ao courier e custo de oportunidade. Com 333 pedidos por dia no nosso scope, 2.44 minutos a mais por entrega custam R$12.000 por mes so em custo operacional."
 
-🇺🇸 "Every extra minute the dasher spends waiting for the order to be ready costs money. We estimate R$0.50 per minute per delivery — between dasher incentives and opportunity cost. With 333 orders per day in our scope, 2.44 extra minutes per delivery cost R$12,000 per month in operational costs alone."
+🇺🇸 "Every extra minute the courier spends waiting for the order to be ready costs money. We estimate R$0.50 per minute per delivery — between courier incentives and opportunity cost. With 333 orders per day in our scope, 2.44 extra minutes per delivery cost R$12,000 per month in operational costs alone."
 
 ---
 
@@ -175,15 +175,15 @@ Delta_Revenue = Delta_Time x Cost_Per_Minute x Orders_Per_Day
 
 ---
 
-🇧🇷 "Hipotese 1: O algoritmo de alocacao de dashers e o problema. O sistema atual — chamamos de FIFO, First In First Out — pega o dasher mais proximo e manda pra la. Mas ele ignora quando o pedido vai ficar pronto. O dasher chega, fica esperando 10 minutos na porta do restaurante. Esse tempo nao aparece como 'atraso' em lugar nenhum, mas aparece no tempo total de entrega."
+🇧🇷 "Hipotese 1: O algoritmo de alocacao de couriers e o problema. O sistema atual — chamamos de FIFO, First In First Out — pega o courier mais proximo e manda pra la. Mas ele ignora quando o pedido vai ficar pronto. O courier chega, fica esperando 10 minutos na porta do restaurante. Esse tempo nao aparece como 'atraso' em lugar nenhum, mas aparece no tempo total de entrega."
 
-🇺🇸 "Hypothesis 1: The dasher allocation algorithm is the problem. The current system — we call it FIFO, First In First Out — picks the nearest available dasher and sends them over. But it ignores when the order will be ready. The dasher arrives and waits 10 minutes at the restaurant door. This time does not show up as 'delay' anywhere, but it appears in the total delivery time."
+🇺🇸 "Hypothesis 1: The courier allocation algorithm is the problem. The current system — we call it FIFO, First In First Out — picks the nearest available courier and sends them over. But it ignores when the order will be ready. The courier arrives and waits 10 minutes at the restaurant door. This time does not show up as 'delay' anywhere, but it appears in the total delivery time."
 
 ---
 
-🇧🇷 "Hipotese 2: Dentro do fluxo de entrega, a etapa de atribuicao do dasher e a mais critica — nao a rota. Se o dasher errado e atribuido, cada etapa depois dele fica penalizada em cascata."
+🇧🇷 "Hipotese 2: Dentro do fluxo de entrega, a etapa de atribuicao do courier e a mais critica — nao a rota. Se o courier errado e atribuido, cada etapa depois dele fica penalizada em cascata."
 
-🇺🇸 "Hypothesis 2: Within the delivery flow, the dasher assignment step is the most critical — not the route. If the wrong dasher is assigned, every step after that is penalized in a cascade."
+🇺🇸 "Hypothesis 2: Within the delivery flow, the courier assignment step is the most critical — not the route. If the wrong courier is assigned, every step after that is penalized in a cascade."
 
 ---
 
@@ -263,14 +263,14 @@ Delta_Revenue = Delta_Time x Cost_Per_Minute x Orders_Per_Day
 
 ---
 
-[LIVE CODING - generate_doordash.py]
+[LIVE CODING - generate_fastdeliver.py]
 
 🇧🇷 Abrir o arquivo no terminal:
 
-🇺🇸 [LIVE CODING - generate_doordash.py] Open the file in the terminal:
+🇺🇸 [LIVE CODING - generate_fastdeliver.py] Open the file in the terminal:
 
 ```bash
-cat gen/data/generate_doordash.py
+cat gen/data/generate_fastdeliver.py
 ```
 
 ---
@@ -344,15 +344,15 @@ delivery_time = base_time * (multiplicador_b if ab_group == 'B' else 1.0)
 
 ---
 
-🇧🇷 "Problema 3: Dasher ausente. 97 pedidos sem dasher_id. Em producao: o algoritmo de alocacao esgotou o timeout sem encontrar um dasher disponivel. O pedido fica em fila. Se voce calcular tempo de atribuicao com NULL, o resultado e NULL — e todas as agregacoes que incluem esse campo viram NULL."
+🇧🇷 "Problema 3: Courier ausente. 97 pedidos sem courier_id. Em producao: o algoritmo de alocacao esgotou o timeout sem encontrar um courier disponivel. O pedido fica em fila. Se voce calcular tempo de atribuicao com NULL, o resultado e NULL — e todas as agregacoes que incluem esse campo viram NULL."
 
-🇺🇸 "Problem 3: Missing dasher. 97 orders without a dasher_id. In production: the allocation algorithm exhausted the timeout without finding an available dasher. The order sits in the queue. If you calculate assignment time with NULL, the result is NULL — and all aggregations that include that field become NULL."
+🇺🇸 "Problem 3: Missing courier. 97 orders without a courier_id. In production: the allocation algorithm exhausted the timeout without finding an available courier. The order sits in the queue. If you calculate assignment time with NULL, the result is NULL — and all aggregations that include that field become NULL."
 
 ---
 
-🇧🇷 "Problema 4: Outliers acima de 120 minutos. 97 pedidos com tempo de entrega acima de 2 horas. Em producao: dasher com problema mecanico, pedido perdido no restaurante, erro de GPS. Esses registros sao tecnicamente validos — nao sao erros de sistema — mas nao representam o fluxo operacional normal."
+🇧🇷 "Problema 4: Outliers acima de 120 minutos. 97 pedidos com tempo de entrega acima de 2 horas. Em producao: courier com problema mecanico, pedido perdido no restaurante, erro de GPS. Esses registros sao tecnicamente validos — nao sao erros de sistema — mas nao representam o fluxo operacional normal."
 
-🇺🇸 "Problem 4: Outliers above 120 minutes. 97 orders with delivery time above 2 hours. In production: dasher with a mechanical breakdown, order lost at the restaurant, GPS error. These records are technically valid — they are not system errors — but they do not represent the normal operational flow."
+🇺🇸 "Problem 4: Outliers above 120 minutes. 97 orders with delivery time above 2 hours. In production: courier with a mechanical breakdown, order lost at the restaurant, GPS error. These records are technically valid — they are not system errors — but they do not represent the normal operational flow."
 
 ---
 
@@ -370,15 +370,15 @@ python gen/data/eda_cleaning.py
 
 [FACILITADOR - Comentando enquanto o script roda]
 
-🇧🇷 "Veja que o pipeline de limpeza nao deleta informacao — ele cria flags booleanas. has_duplicate_flag, has_timestamp_issue_flag, has_missing_dasher_flag, has_outlier_flag. Isso e critico: em vez de apagar o registro problematico, eu marco ele. O registro continua no dataset para auditorias e analises de excecao. Mas os modelos downstream filtram has_duplicate_flag = false e has_outlier_flag = false antes de calcular metricas."
+🇧🇷 "Veja que o pipeline de limpeza nao deleta informacao — ele cria flags booleanas. has_duplicate_flag, has_timestamp_issue_flag, has_missing_courier_flag, has_outlier_flag. Isso e critico: em vez de apagar o registro problematico, eu marco ele. O registro continua no dataset para auditorias e analises de excecao. Mas os modelos downstream filtram has_duplicate_flag = false e has_outlier_flag = false antes de calcular metricas."
 
-🇺🇸 [FACILITATOR - Commenting while the script runs] "Notice that the cleaning pipeline does not delete information — it creates boolean flags. has_duplicate_flag, has_timestamp_issue_flag, has_missing_dasher_flag, has_outlier_flag. This is critical: instead of erasing the problematic record, I flag it. The record stays in the dataset for audits and exception analyses. But the downstream models filter has_duplicate_flag = false and has_outlier_flag = false before calculating metrics."
+🇺🇸 [FACILITATOR - Commenting while the script runs] "Notice that the cleaning pipeline does not delete information — it creates boolean flags. has_duplicate_flag, has_timestamp_issue_flag, has_missing_courier_flag, has_outlier_flag. This is critical: instead of erasing the problematic record, I flag it. The record stays in the dataset for audits and exception analyses. But the downstream models filter has_duplicate_flag = false and has_outlier_flag = false before calculating metrics."
 
 ---
 
-🇧🇷 "Por que nao simplesmente deletar? Porque amanha o seu gestor pode perguntar: 'Quantos pedidos tiveram problema de dasher ausente esse mes?' Se voce deletou, a resposta e: 'Nao sei.' Se voce marcou com flag, a resposta e: '97 pedidos, 1% do total, concentrados nos horarios de pico.'"
+🇧🇷 "Por que nao simplesmente deletar? Porque amanha o seu gestor pode perguntar: 'Quantos pedidos tiveram problema de courier ausente esse mes?' Se voce deletou, a resposta e: 'Nao sei.' Se voce marcou com flag, a resposta e: '97 pedidos, 1% do total, concentrados nos horarios de pico.'"
 
-🇺🇸 "Why not simply delete? Because tomorrow your manager may ask: 'How many orders had a missing dasher issue this month?' If you deleted them, the answer is: 'I do not know.' If you flagged them, the answer is: '97 orders, 1% of the total, concentrated in peak hours.'"
+🇺🇸 "Why not simply delete? Because tomorrow your manager may ask: 'How many orders had a missing courier issue this month?' If you deleted them, the answer is: 'I do not know.' If you flagged them, the answer is: '97 orders, 1% of the total, concentrated in peak hours.'"
 
 ---
 
@@ -519,7 +519,7 @@ python gen/data/eda_cleaning.py
 🇺🇸 [LIVE CODING - complete dbt pipeline] Run:
 
 ```bash
-cd dbt_doordash
+cd dbt_fastdeliver
 dbt deps --profiles-dir .
 ```
 
@@ -764,7 +764,7 @@ dbt docs serve --profiles-dir .
 import pandas as pd
 from scipy import stats
 
-df = pd.read_csv('gen/data/doordash_clean.csv')
+df = pd.read_csv('gen/data/fastdeliver_clean.csv')
 grupo_a = df[df['ab_group'] == 'A']['delivery_duration_minutes'].dropna()
 grupo_b = df[df['ab_group'] == 'B']['delivery_duration_minutes'].dropna()
 
@@ -1014,9 +1014,9 @@ streamlit run streamlit_app.py
 
 ---
 
-🇧🇷 "Faz sentido. O algoritmo preditivo programa o dasher para chegar no restaurante exatamente quando o pedido esta pronto. Sem espera. Ele parte direto para a entrega com a rota otimizada — sem a pressa de compensar o tempo perdido esperando."
+🇧🇷 "Faz sentido. O algoritmo preditivo programa o courier para chegar no restaurante exatamente quando o pedido esta pronto. Sem espera. Ele parte direto para a entrega com a rota otimizada — sem a pressa de compensar o tempo perdido esperando."
 
-🇺🇸 "This makes sense. The predictive algorithm schedules the dasher to arrive at the restaurant exactly when the order is ready. No waiting. They leave directly for the delivery with the optimized route — without the rush to compensate for time lost waiting."
+🇺🇸 "This makes sense. The predictive algorithm schedules the courier to arrive at the restaurant exactly when the order is ready. No waiting. They leave directly for the delivery with the optimized route — without the rush to compensate for time lost waiting."
 
 ---
 
@@ -1090,9 +1090,9 @@ streamlit run streamlit_app.py
 
 [FACILITADOR - Roleplay: A Decisao Final]
 
-🇧🇷 "Agora voce e o Head of Analytics da DoorDash. E segunda de manha. Voce tem 5 minutos de reuniao com o CEO. Qual e a sua recomendacao?"
+🇧🇷 "Agora voce e o Head of Analytics da FastDeliver. E segunda de manha. Voce tem 5 minutos de reuniao com o CEO. Qual e a sua recomendacao?"
 
-🇺🇸 [FACILITATOR - Roleplay: The Final Decision] "Now you are the Head of Analytics at DoorDash. It is Monday morning. You have a 5-minute meeting with the CEO. What is your recommendation?"
+🇺🇸 [FACILITATOR - Roleplay: The Final Decision] "Now you are the Head of Analytics at FastDeliver. It is Monday morning. You have a 5-minute meeting with the CEO. What is your recommendation?"
 
 ---
 
@@ -1134,9 +1134,9 @@ streamlit run streamlit_app.py
 
 ---
 
-🇧🇷 "Semana 1: 25% do trafego. Monitore tres coisas: taxa de cancelamento (alerta se ultrapassar 12%), dasher_score medio (alerta se cair mais de 5%), e tempo de atribuicao (alerta se ultrapassar 5 minutos). Se qualquer alerta disparar, volta para 0% e investiga."
+🇧🇷 "Semana 1: 25% do trafego. Monitore tres coisas: taxa de cancelamento (alerta se ultrapassar 12%), courier_score medio (alerta se cair mais de 5%), e tempo de atribuicao (alerta se ultrapassar 5 minutos). Se qualquer alerta disparar, volta para 0% e investiga."
 
-🇺🇸 "Week 1: 25% of traffic. Monitor three things: cancellation rate (alert if it exceeds 12%), average dasher_score (alert if it drops more than 5%), and assignment time (alert if it exceeds 5 minutes). If any alert fires, roll back to 0% and investigate."
+🇺🇸 "Week 1: 25% of traffic. Monitor three things: cancellation rate (alert if it exceeds 12%), average courier_score (alert if it drops more than 5%), and assignment time (alert if it exceeds 5 minutes). If any alert fires, roll back to 0% and investigate."
 
 ---
 

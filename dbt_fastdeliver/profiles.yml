@@ -1,0 +1,7 @@
+dbt_fastdeliver:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../gen/data/fastdeliver.duckdb"
+      threads: 4

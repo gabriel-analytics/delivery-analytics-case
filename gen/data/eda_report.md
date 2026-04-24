@@ -1,8 +1,8 @@
-# EDA Report — DoorDash Delivery Dataset
+# EDA Report — FastDeliver Delivery Dataset
 
 **Data:** 2026-04-21
 **Analista:** gabriel-analytics
-**Dataset:** doordash_raw.csv
+**Dataset:** fastdeliver_raw.csv
 
 ---
 
@@ -24,15 +24,15 @@
 | Coluna | % Nulos |
 |--------|---------|
 | delivery_duration_minutes | 9.41% |
-| dasher_assigned_at | 8.69% |
-| stage_3_dasher_assigned_at | 8.69% |
+| courier_assigned_at | 8.69% |
+| stage_3_courier_assigned_at | 8.69% |
 | pickup_at | 7.68% |
 | delivered_at | 7.68% |
-| stage_4_dasher_arrived_restaurant_at | 7.68% |
+| stage_4_courier_arrived_restaurant_at | 7.68% |
 | stage_5_order_picked_up_at | 7.68% |
-| stage_6_dasher_near_customer_at | 7.68% |
+| stage_6_courier_near_customer_at | 7.68% |
 | stage_7_delivered_at | 7.68% |
-| dasher_id | 1.01% |
+| courier_id | 1.01% |
 
 ### Flags de qualidade detectadas
 
@@ -40,7 +40,7 @@
 |------|-----------------|
 | has_duplicate_flag | 400 |
 | has_timestamp_issue_flag | 103 |
-| has_missing_dasher_flag | 103 |
+| has_missing_courier_flag | 103 |
 | has_outlier_flag | 103 |
 
 ---
@@ -51,7 +51,7 @@
 |-------|-----------------|-------------|-----------|
 | Duplicatas (order_id) | 400 | Remocao de linhas com has_duplicate_flag=True; keep first | -400 linhas |
 | Timestamps fora de ordem | 103 | np.sort nos 7 stage timestamps; recalculo de delivery_duration_minutes | 97 linhas corrigidas |
-| Dasher ausente | 103 | dasher_id imputado com 'UNASSIGNED'; dasher_assigned_at imputado de stage_3 | 0 nulos restantes |
+| Courier ausente | 103 | courier_id imputado com 'UNASSIGNED'; courier_assigned_at imputado de stage_3 | 0 nulos restantes |
 | Outliers (>120 min) | 103 | Remocao de linhas com has_outlier_flag=True | -97 linhas |
 
 ---
@@ -138,7 +138,7 @@ Legenda: + = piora/aumento, - = melhora/reducao, -- = primeiro mes (sem comparac
 
 ### Alertas de Qualidade de Dados
 
-- Dasher ausente em 103 pedidos — imputados com 'UNASSIGNED'; investigar causa raiz no sistema de atribuicao
+- Courier ausente em 103 pedidos — imputados com 'UNASSIGNED'; investigar causa raiz no sistema de atribuicao
 - 103 pedidos com timestamps fora de ordem — sugerir validacao no pipeline de ingestao
 - Pedidos `in_progress` (177) excluidos das analises temporais — revisar se sao pedidos ainda ativos ou dados incompletos
 - Delivery duration com nulos (928 restantes apos limpeza) correspondem a pedidos cancelados/in_progress sem timestamp de entrega — comportamento esperado

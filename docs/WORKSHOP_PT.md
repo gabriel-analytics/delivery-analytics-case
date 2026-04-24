@@ -1,8 +1,8 @@
-# Workshop DoorDash Analytics — Roteiro do Facilitador
+# Workshop Delivery Analytics — Roteiro do Facilitador
 
 **Duracao:** 4 horas | **Nivel:** Intermediario | **Pre-requisito:** Python basico + SQL
-**Repositorio:** https://github.com/gabriel-analytics/doordash-analytics-case
-**Dashboard:** https://doordash-analytics-case-hupqbwjyucsrwzsvceqqyw.streamlit.app
+**Repositorio:** https://github.com/gabriel-analytics/delivery-analytics-case
+**Dashboard:** https://delivery-analytics-case-hupqbwjyucsrwzsvceqqyw.streamlit.app
 
 ---
 
@@ -24,7 +24,7 @@
 
 Pausa de 3 segundos.
 
-"Voce e o Head of Analytics da DoorDash Brasil. Sao 9h de segunda-feira. Seu CEO manda uma mensagem no Slack. A mensagem diz: 'O tempo medio de entrega subiu 15% no ultimo trimestre. O que esta acontecendo?' — so isso. Sem contexto adicional."
+"Voce e o Head of Analytics da FastDeliver Brasil. Sao 9h de segunda-feira. Seu CEO manda uma mensagem no Slack. A mensagem diz: 'O tempo medio de entrega subiu 15% no ultimo trimestre. O que esta acontecendo?' — so isso. Sem contexto adicional."
 
 "O que voce faz primeiro?"
 
@@ -36,13 +36,13 @@ Deixar a turma responder. Nao corrigir ainda. Ouvir as respostas. As respostas t
 
 ---
 
-[FACILITADOR - Storytelling da DoorDash]
+[FACILITADOR - Storytelling da FastDeliver]
 
-"Antes de responder, deixa eu te contar quem e a DoorDash."
+"Antes de responder, deixa eu te contar quem e a FastDeliver."
 
-"A DoorDash e o maior marketplace de delivery de comida dos EUA. Mais de 35 milhoes de pedidos por mes. O modelo de negocio e simples: eles conectam clientes, restaurantes e entregadores — os dashers — e cobram uma comissao de 15% do restaurante em cima de cada pedido. Parece pouco? 15% de cada pizza, hamburguer e sushi pedido em dezenas de cidades todos os dias soma bilhoes."
+"A FastDeliver e o maior marketplace de delivery de comida dos EUA. Mais de 35 milhoes de pedidos por mes. O modelo de negocio e simples: eles conectam clientes, restaurantes e entregadores — os couriers — e cobram uma comissao de 15% do restaurante em cima de cada pedido. Parece pouco? 15% de cada pizza, hamburguer e sushi pedido em dezenas de cidades todos os dias soma bilhoes."
 
-"Mas o produto da DoorDash nao e a comida. O produto da DoorDash e a velocidade. A promessa que eles vendem para o cliente e: 'Voce vai receber sua comida rapido, quente, e sem complicacao.' Se eles quebram essa promessa, perdem o cliente."
+"Mas o produto da FastDeliver nao e a comida. O produto da FastDeliver e a velocidade. A promessa que eles vendem para o cliente e: 'Voce vai receber sua comida rapido, quente, e sem complicacao.' Se eles quebram essa promessa, perdem o cliente."
 
 "Agora imagina que no primeiro trimestre de 2025, os dados mostram que o tempo medio de entrega subiu 15%. Nao 1%, nao 2% — 15%. Isso e o equivalente a um restaurante que sempre entregava em 35 minutos passar a entregar em 40 minutos sem nenhuma justificativa."
 
@@ -63,7 +63,7 @@ Delta_Receita = Delta_Tempo x Custo_Minuto x Pedidos_Dia
               + Delta_Retencao x Ticket_Medio x Pedidos_Dia
 ```
 
-"Cada minuto extra que o dasher passa esperando o pedido ficar pronto custa dinheiro. Estimamos R$0.50 por minuto por entrega — entre incentivos ao dasher e custo de oportunidade. Com 333 pedidos por dia no nosso scope, 2.44 minutos a mais por entrega custam R$12.000 por mes so em custo operacional."
+"Cada minuto extra que o courier passa esperando o pedido ficar pronto custa dinheiro. Estimamos R$0.50 por minuto por entrega — entre incentivos ao courier e custo de oportunidade. Com 333 pedidos por dia no nosso scope, 2.44 minutos a mais por entrega custam R$12.000 por mes so em custo operacional."
 
 "Isso sem contar o churn de cliente. Estudos internos de delivery mostram que cada minuto adicional reduz a probabilidade de reorder em 0.3%. Em 2.44 minutos extras, isso e quase 0.7% de churn incremental por cliente. Multiplicado pelo ticket medio de R$38.50 e pela base de pedidos, comeca a ser material."
 
@@ -81,9 +81,9 @@ Delta_Receita = Delta_Tempo x Custo_Minuto x Pedidos_Dia
 
 Apresentar cada uma com pausa para perguntas:
 
-"Hipotese 1: O algoritmo de alocacao de dashers e o problema. O sistema atual — chamamos de FIFO, First In First Out — pega o dasher mais proximo e manda pra la. Mas ele ignora quando o pedido vai ficar pronto. O dasher chega, fica esperando 10 minutos na porta do restaurante. Esse tempo nao aparece como 'atraso' em lugar nenhum, mas aparece no tempo total de entrega."
+"Hipotese 1: O algoritmo de alocacao de couriers e o problema. O sistema atual — chamamos de FIFO, First In First Out — pega o courier mais proximo e manda pra la. Mas ele ignora quando o pedido vai ficar pronto. O courier chega, fica esperando 10 minutos na porta do restaurante. Esse tempo nao aparece como 'atraso' em lugar nenhum, mas aparece no tempo total de entrega."
 
-"Hipotese 2: Dentro do fluxo de entrega, a etapa de atribuicao do dasher e a mais critica — nao a rota. Se o dasher errado e atribuido, cada etapa depois dele fica penalizada em cascata."
+"Hipotese 2: Dentro do fluxo de entrega, a etapa de atribuicao do courier e a mais critica — nao a rota. Se o courier errado e atribuido, cada etapa depois dele fica penalizada em cascata."
 
 "Hipotese 3: Se trocarmos o algoritmo FIFO por um algoritmo preditivo, conseguimos reducao de pelo menos 5% no tempo de entrega. Por que 5%? Porque abaixo de 5%, o custo de implementacao nao justifica o risco operacional de mudar um sistema critico."
 
@@ -123,12 +123,12 @@ Ouvir 3-4 hipoteses da turma. Comentar brevemente cada uma. Nao refutar — vali
 
 ---
 
-[LIVE CODING - generate_doordash.py]
+[LIVE CODING - generate_fastdeliver.py]
 
 Abrir o arquivo no terminal:
 
 ```bash
-cat gen/data/generate_doordash.py
+cat gen/data/generate_fastdeliver.py
 ```
 
 [FACILITADOR - Comentando o codigo enquanto mostra]
@@ -162,9 +162,9 @@ Mostrar as linhas de injecao de problemas no codigo.
 
 "Problema 2: Timestamps fora de ordem. 97 pedidos onde o timestamp de uma etapa e anterior ao da etapa anterior — o que e fisicamente impossivel. Em producao, isso e clock skew: diferentes microsservicos rodam em servidores diferentes com relogios ligeiramente dessincronizados. Diferenca de 200 milissegundos entre servidores ja causa isso quando os eventos chegam muito proximos no tempo."
 
-"Problema 3: Dasher ausente. 97 pedidos sem dasher_id. Em producao: o algoritmo de alocacao esgotou o timeout sem encontrar um dasher disponivel. O pedido fica em fila. Se voce calcular tempo de atribuicao com NULL, o resultado e NULL — e todas as agregacoes que incluem esse campo viram NULL."
+"Problema 3: Courier ausente. 97 pedidos sem courier_id. Em producao: o algoritmo de alocacao esgotou o timeout sem encontrar um courier disponivel. O pedido fica em fila. Se voce calcular tempo de atribuicao com NULL, o resultado e NULL — e todas as agregacoes que incluem esse campo viram NULL."
 
-"Problema 4: Outliers acima de 120 minutos. 97 pedidos com tempo de entrega acima de 2 horas. Em producao: dasher com problema mecanico, pedido perdido no restaurante, erro de GPS. Esses registros sao tecnicamente validos — nao sao erros de sistema — mas nao representam o fluxo operacional normal."
+"Problema 4: Outliers acima de 120 minutos. 97 pedidos com tempo de entrega acima de 2 horas. Em producao: courier com problema mecanico, pedido perdido no restaurante, erro de GPS. Esses registros sao tecnicamente validos — nao sao erros de sistema — mas nao representam o fluxo operacional normal."
 
 ---
 
@@ -176,9 +176,9 @@ python gen/data/eda_cleaning.py
 
 [FACILITADOR - Comentando enquanto o script roda]
 
-"Veja que o pipeline de limpeza nao deleta informacao — ele cria flags booleanas. has_duplicate_flag, has_timestamp_issue_flag, has_missing_dasher_flag, has_outlier_flag. Isso e critico: em vez de apagar o registro problematico, eu marco ele. O registro continua no dataset para auditorias e analises de excecao. Mas os modelos downstream filtram has_duplicate_flag = false e has_outlier_flag = false antes de calcular metricas."
+"Veja que o pipeline de limpeza nao deleta informacao — ele cria flags booleanas. has_duplicate_flag, has_timestamp_issue_flag, has_missing_courier_flag, has_outlier_flag. Isso e critico: em vez de apagar o registro problematico, eu marco ele. O registro continua no dataset para auditorias e analises de excecao. Mas os modelos downstream filtram has_duplicate_flag = false e has_outlier_flag = false antes de calcular metricas."
 
-"Por que nao simplesmente deletar? Porque amanha o seu gestor pode perguntar: 'Quantos pedidos tiveram problema de dasher ausente esse mes?' Se voce deletou, a resposta e: 'Nao sei.' Se voce marcou com flag, a resposta e: '97 pedidos, 1% do total, concentrados nos horarios de pico.'"
+"Por que nao simplesmente deletar? Porque amanha o seu gestor pode perguntar: 'Quantos pedidos tiveram problema de courier ausente esse mes?' Se voce deletou, a resposta e: 'Nao sei.' Se voce marcou com flag, a resposta e: '97 pedidos, 1% do total, concentrados nos horarios de pico.'"
 
 ---
 
@@ -249,7 +249,7 @@ Esperar respostas da turma.
 [LIVE CODING - dbt pipeline completo]
 
 ```bash
-cd dbt_doordash
+cd dbt_fastdeliver
 dbt deps --profiles-dir .
 ```
 
@@ -382,7 +382,7 @@ Ou abrir Python interativo e mostrar:
 import pandas as pd
 from scipy import stats
 
-df = pd.read_csv('gen/data/doordash_clean.csv')
+df = pd.read_csv('gen/data/fastdeliver_clean.csv')
 grupo_a = df[df['ab_group'] == 'A']['delivery_duration_minutes'].dropna()
 grupo_b = df[df['ab_group'] == 'B']['delivery_duration_minutes'].dropna()
 
@@ -498,7 +498,7 @@ Mostrar o waterfall.
 
 "A etapa de Rota domina: 17.30 minutos, 43% do tempo total. E tambem a etapa com maior ganho do algoritmo B: -1.15 minutos, -6.4%."
 
-"Faz sentido. O algoritmo preditivo programa o dasher para chegar no restaurante exatamente quando o pedido esta pronto. Sem espera. Ele parte direto para a entrega com a rota otimizada — sem a pressa de compensar o tempo perdido esperando."
+"Faz sentido. O algoritmo preditivo programa o courier para chegar no restaurante exatamente quando o pedido esta pronto. Sem espera. Ele parte direto para a entrega com a rota otimizada — sem a pressa de compensar o tempo perdido esperando."
 
 ---
 
@@ -538,7 +538,7 @@ Ficar em silencio por 60 segundos.
 
 [FACILITADOR - Roleplay: A Decisao Final]
 
-"Agora voce e o Head of Analytics da DoorDash. E segunda de manha. Voce tem 5 minutos de reuniao com o CEO. Qual e a sua recomendacao?"
+"Agora voce e o Head of Analytics da FastDeliver. E segunda de manha. Voce tem 5 minutos de reuniao com o CEO. Qual e a sua recomendacao?"
 
 Esperar 2-3 voluntarios responderem.
 
@@ -553,7 +553,7 @@ Corrigir gentilmente:
 
 "O plano que eu recomendo — e que esta na documentacao:"
 
-"Semana 1: 25% do trafego. Monitore tres coisas: taxa de cancelamento (alerta se ultrapassar 12%), dasher_score medio (alerta se cair mais de 5%), e tempo de atribuicao (alerta se ultrapassar 5 minutos). Se qualquer alerta disparar, volta para 0% e investiga."
+"Semana 1: 25% do trafego. Monitore tres coisas: taxa de cancelamento (alerta se ultrapassar 12%), courier_score medio (alerta se cair mais de 5%), e tempo de atribuicao (alerta se ultrapassar 5 minutos). Se qualquer alerta disparar, volta para 0% e investiga."
 
 "Semana 2: 50%. Valide que o ganho de -6.4% persiste fora do ambiente controlado do experimento. O ambiente de producao tem variaveis que o experimento nao capturou."
 

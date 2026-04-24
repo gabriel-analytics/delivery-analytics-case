@@ -28,25 +28,25 @@ jobs:
 
       - name: Generate synthetic dataset
         run: |
-          python gen/data/generate_doordash.py
+          python gen/data/generate_fastdeliver.py
           python gen/data/eda_cleaning.py
         working-directory: ${{ github.workspace }}
 
       - name: dbt deps
         run: dbt deps --profiles-dir .
-        working-directory: dbt_doordash
+        working-directory: dbt_fastdeliver
 
       - name: dbt run
         id: dbt_run
         run: dbt run --profiles-dir .
-        working-directory: dbt_doordash
+        working-directory: dbt_fastdeliver
 
       - name: dbt test
         id: dbt_test
         run: |
           dbt test --profiles-dir . 2>&1 | tee dbt_test_output.txt
           echo "TEST_RESULT=$(tail -5 dbt_test_output.txt)" >> $GITHUB_ENV
-        working-directory: dbt_doordash
+        working-directory: dbt_fastdeliver
 
       - name: Comment on commit
         if: always()

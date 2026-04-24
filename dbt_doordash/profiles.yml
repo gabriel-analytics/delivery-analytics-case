@@ -1,7 +1,0 @@
-dbt_doordash:
-  target: dev
-  outputs:
-    dev:
-      type: duckdb
-      path: "../gen/data/doordash.duckdb"
-      threads: 4

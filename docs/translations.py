@@ -1,12 +1,12 @@
 """
-translations.py — PT/EN strings for the DoorDash Analytics Dashboard.
+translations.py — PT/EN strings for the Delivery Analytics Dashboard.
 Every hardcoded UI string in streamlit_app.py must have a key here.
 """
 
 TRANSLATIONS = {
     "pt": {
         # --- Sidebar ---
-        "sidebar_title": "DoorDash Analytics",
+        "sidebar_title": "Delivery Analytics",
         "sidebar_subtitle": "Case Study — Algoritmo de Atribuicao",
         "nav_label": "Navegacao",
         "nav_visao_geral": "Visao Geral",
@@ -20,7 +20,7 @@ TRANSLATIONS = {
         # --- Spinner ---
         "carregando": "Carregando dados...",
         # --- Footer ---
-        "footer": "Dados: DoorDash Case Study | Periodo: Jan-Mar 2025 | n=9.703 pedidos",
+        "footer": "Dados: FastDeliver Case Study | Periodo: Jan-Mar 2025 | n=9.703 pedidos",
         # ----------------------------------------------------------------
         # PAGE 1 — Visao Geral
         # ----------------------------------------------------------------
@@ -111,7 +111,7 @@ TRANSLATIONS = {
         "pg3_tbl_maior_ganho": "Maior Ganho?",
         "pg3_tbl_sim": "Sim",
         # Insight
-        "pg3_insight": 'Maior Ganho: A etapa "{etapa}" apresentou a maior reducao de tempo no Grupo B ({delta_min:.2f} min, {delta_pct:.1f}%), sugerindo que o novo algoritmo de atribuicao de dasher otimiza principalmente esta etapa do fluxo de entrega.',
+        "pg3_insight": 'Maior Ganho: A etapa "{etapa}" apresentou a maior reducao de tempo no Grupo B ({delta_min:.2f} min, {delta_pct:.1f}%), sugerindo que o novo algoritmo de atribuicao de courier otimiza principalmente esta etapa do fluxo de entrega.',
         # ETAPAS display names (used in charts)
         "etapa_aceite": "Aceite",
         "etapa_preparo": "Preparo",
@@ -168,15 +168,15 @@ TRANSLATIONS = {
 **Proximos Passos:**
 1. Rollout gradual: 25% \u2014 50% \u2014 100% em 3 semanas
 2. Monitorar taxa de cancelamento (alerta: >12%)
-3. Avaliar satisfacao do dasher com o novo algoritmo
+3. Avaliar satisfacao do courier com o novo algoritmo
 4. Revisar metricas apos 2 semanas de rollout completo
 """,
     },
 
     "en": {
         # --- Sidebar ---
-        "sidebar_title": "DoorDash Analytics",
-        "sidebar_subtitle": "Case Study \u2014 Dasher Assignment Algorithm",
+        "sidebar_title": "Delivery Analytics",
+        "sidebar_subtitle": "Case Study \u2014 Courier Assignment Algorithm",
         "nav_label": "Navigation",
         "nav_visao_geral": "Overview",
         "nav_ab_test": "A/B Test Result",
@@ -189,7 +189,7 @@ TRANSLATIONS = {
         # --- Spinner ---
         "carregando": "Loading data...",
         # --- Footer ---
-        "footer": "Data: DoorDash Case Study | Period: Jan-Mar 2025 | n=9,703 orders",
+        "footer": "Data: FastDeliver Case Study | Period: Jan-Mar 2025 | n=9,703 orders",
         # ----------------------------------------------------------------
         # PAGE 1 — Overview
         # ----------------------------------------------------------------
@@ -280,7 +280,7 @@ TRANSLATIONS = {
         "pg3_tbl_maior_ganho": "Biggest Gain?",
         "pg3_tbl_sim": "Yes",
         # Insight
-        "pg3_insight": 'Biggest Gain: Stage "{etapa}" showed the largest time reduction in Group B ({delta_min:.2f} min, {delta_pct:.1f}%), suggesting the new dasher assignment algorithm primarily optimizes this step of the delivery flow.',
+        "pg3_insight": 'Biggest Gain: Stage "{etapa}" showed the largest time reduction in Group B ({delta_min:.2f} min, {delta_pct:.1f}%), suggesting the new courier assignment algorithm primarily optimizes this step of the delivery flow.',
         # ETAPAS display names
         "etapa_aceite": "Acceptance",
         "etapa_preparo": "Preparation",
@@ -297,7 +297,7 @@ TRANSLATIONS = {
         "pg4_pedidos_dia": "Orders per day",
         "pg4_pct_rollout": "% Rollout Group B",
         "pg4_ticket_medio": "Avg order value (R$)",
-        "pg4_custo_min": "Cost per dasher minute (R$)",
+        "pg4_custo_min": "Cost per courier minute (R$)",
         "pg4_conversao": "Conversion increase per saved minute (%)",
         "pg4_custo_impl": "Implementation cost (R$)",
         # KPIs
@@ -337,7 +337,7 @@ TRANSLATIONS = {
 **Next Steps:**
 1. Gradual rollout: 25% \u2014 50% \u2014 100% over 3 weeks
 2. Monitor cancellation rate (alert threshold: >12%)
-3. Assess dasher satisfaction with the new algorithm
+3. Assess courier satisfaction with the new algorithm
 4. Review metrics after 2 weeks of full rollout
 """,
     },

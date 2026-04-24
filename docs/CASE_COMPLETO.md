@@ -1,17 +1,17 @@
-# DoorDash Analytics Case — Documentacao Tecnica Completa
+# Delivery Analytics Case — Documentacao Tecnica Completa
 
-> Repositorio: https://github.com/gabriel-analytics/doordash-analytics-case
-> Dashboard: https://doordash-analytics-case-hupqbwjyucsrwzsvceqqyw.streamlit.app
+> Repositorio: https://github.com/gabriel-analytics/fastdeliver-analytics-case
+> Dashboard: https://fastdeliver-analytics-case-hupqbwjyucsrwzsvceqqyw.streamlit.app
 
 ---
 
 ## Secao 1: Contexto e Problema de Negocio
 
-A DoorDash e o maior marketplace de delivery de comida dos Estados Unidos, com presenca significativa no Brasil atraves de operacoes proprias e parcerias regionais. O modelo de negocio e baseado em um take-rate de aproximadamente 15% sobre o valor de cada pedido: a empresa conecta clientes, restaurantes e entregadores autonomos (chamados de dashers), cobrando uma comissao do restaurante e uma taxa de entrega do cliente. Com mais de 35 milhoes de pedidos por mes, variacoes fracionais na eficiencia operacional se traduzem em dezenas de milhares de reais por semana.
+A FastDeliver e o maior marketplace de delivery de comida dos Estados Unidos, com presenca significativa no Brasil atraves de operacoes proprias e parcerias regionais. O modelo de negocio e baseado em um take-rate de aproximadamente 15% sobre o valor de cada pedido: a empresa conecta clientes, restaurantes e entregadores autonomos (chamados de couriers), cobrando uma comissao do restaurante e uma taxa de entrega do cliente. Com mais de 35 milhoes de pedidos por mes, variacoes fracionais na eficiencia operacional se traduzem em dezenas de milhares de reais por semana.
 
 O problema que motivou esse case foi detectado no Q1 2025 durante uma revisao operacional de rotina: o tempo medio de entrega subiu 15% em relacao ao trimestre anterior. Para uma empresa cujo produto central e a velocidade e conveniencia, esse numero e critico. Nao e apenas uma questao estetica de performance — cada minuto extra de entrega tem dois impactos financeiros diretos e quantificaveis.
 
-O primeiro impacto e o custo operacional direto: o dasher e pago por tempo de deslocamento e espera. Cada minuto que ele passa esperando um pedido que nao esta pronto e um custo que a DoorDash absorve direta ou indiretamente via incentivos. Estimamos esse custo em R$0.50 por minuto por entrega, um numero conservador baseado na estrutura de comissao de dashers no mercado brasileiro.
+O primeiro impacto e o custo operacional direto: o courier e pago por tempo de deslocamento e espera. Cada minuto que ele passa esperando um pedido que nao esta pronto e um custo que a FastDeliver absorve direta ou indiretamente via incentivos. Estimamos esse custo em R$0.50 por minuto por entrega, um numero conservador baseado na estrutura de comissao de couriers no mercado brasileiro.
 
 O segundo impacto e a retencao de clientes. Estudos internos de plataformas de delivery mostram que cada minuto adicional de espera reduz a probabilidade de o cliente fazer outro pedido dentro de 7 dias em aproximadamente 0.3%. Esse efeito de retencao se acumula: um cliente que espera 10 minutos a mais tem 3% menos probabilidade de voltar. Com tickets medios em torno de R$38.50 e uma base de 333 pedidos por dia (no escopo do nosso dataset representativo), isso e economicamente material.
 
@@ -39,27 +39,27 @@ Antes de qualquer analise, formulamos 4 hipoteses estruturadas no formato cienti
 
 ### H1: O algoritmo de alocacao e o principal gargalo
 
-**Definicao:** O algoritmo FIFO (First In, First Out) de alocacao de dashers e responsavel pela maior parte do aumento no tempo de entrega.
+**Definicao:** O algoritmo FIFO (First In, First Out) de alocacao de couriers e responsavel pela maior parte do aumento no tempo de entrega.
 
 **Variavel independente:** Tipo de algoritmo de alocacao (FIFO vs preditivo).
 
 **Variavel dependente:** Tempo total de entrega em minutos (delivery_duration_minutes).
 
-**Mecanismo causal:** O algoritmo FIFO seleciona o dasher disponivel mais proximo do restaurante no momento em que o pedido e criado. Ele ignora completamente quando o pedido ficara pronto. O resultado pratico: o dasher frequentemente chega ao restaurante 5-10 minutos antes do pedido estar pronto e fica esperando. Esse tempo de espera e invisivel no dado de rota mas aparece no tempo total. Adicionalmente, o FIFO ignora o historico de pontualidade do dasher e as condicoes de trafego no momento da atribuicao.
+**Mecanismo causal:** O algoritmo FIFO seleciona o courier disponivel mais proximo do restaurante no momento em que o pedido e criado. Ele ignora completamente quando o pedido ficara pronto. O resultado pratico: o courier frequentemente chega ao restaurante 5-10 minutos antes do pedido estar pronto e fica esperando. Esse tempo de espera e invisivel no dado de rota mas aparece no tempo total. Adicionalmente, o FIFO ignora o historico de pontualidade do courier e as condicoes de trafego no momento da atribuicao.
 
 **Como testar:** Experimento controlado A/B com split 50/50. Grupo A recebe algoritmo FIFO (controle), Grupo B recebe algoritmo preditivo (tratamento). Metricas primarias: delivery_duration_minutes, duracao_rota_min, duracao_atribuicao_min.
 
 ---
 
-### H2: A etapa de atribuicao do dasher e a mais critica (nao a rota)
+### H2: A etapa de atribuicao do courier e a mais critica (nao a rota)
 
-**Definicao:** De todas as etapas do fluxo de entrega, o tempo de atribuicao do dasher (duracao_atribuicao_min) tem o maior impacto no tempo total.
+**Definicao:** De todas as etapas do fluxo de entrega, o tempo de atribuicao do courier (duracao_atribuicao_min) tem o maior impacto no tempo total.
 
-**Variavel independente:** Velocidade e qualidade da atribuicao do dasher (duracao_atribuicao_min).
+**Variavel independente:** Velocidade e qualidade da atribuicao do courier (duracao_atribuicao_min).
 
 **Variavel dependente:** Tempo total de entrega (delivery_duration_minutes).
 
-**Mecanismo causal:** A atribuicao e a etapa que desencadeia todas as outras. Se o dasher errado e atribuido (alguem longe, com historico ruim, ou em area de trafego intenso), cada etapa subsequente e penalizada. Um dasher que recebe o pedido 3 minutos mais tarde do que o otimo vai chegar 3 minutos mais tarde no restaurante, vai coletar 3 minutos mais tarde e vai entregar 3 minutos mais tarde — o atraso propaga-se de forma aditiva pelo pipeline.
+**Mecanismo causal:** A atribuicao e a etapa que desencadeia todas as outras. Se o courier errado e atribuido (alguem longe, com historico ruim, ou em area de trafego intenso), cada etapa subsequente e penalizada. Um courier que recebe o pedido 3 minutos mais tarde do que o otimo vai chegar 3 minutos mais tarde no restaurante, vai coletar 3 minutos mais tarde e vai entregar 3 minutos mais tarde — o atraso propaga-se de forma aditiva pelo pipeline.
 
 **Como testar:** Correlacao de Pearson entre duracao_atribuicao_min e delivery_duration_minutes no dataset historico. Complementar com regressao OLS controlando por cidade, horario e categoria de restaurante.
 
@@ -105,13 +105,13 @@ Com ~4.800 pedidos por grupo no dataset, o poder estatistico e superior a 99% �
 
 ### H4: O impacto do algoritmo varia por regiao e horario
 
-**Definicao:** O ganho do algoritmo B nao e uniforme — regioes com maior densidade de dashers e horarios de menor pico se beneficiam mais.
+**Definicao:** O ganho do algoritmo B nao e uniforme — regioes com maior densidade de couriers e horarios de menor pico se beneficiam mais.
 
 **Variavel independente:** Interacao tripla cidade x periodo_do_dia x algoritmo.
 
 **Variavel dependente:** delivery_duration_minutes.
 
-**Mecanismo causal:** O algoritmo preditivo usa dados de trafego e historico de dashers. Em cidades menores (Curitiba, Porto Alegre) com menos trafego e dashers mais previssiveis, o modelo preditivo tem mais sinal e gera melhores predicoes. Em Sao Paulo, onde o trafego e caotico e o pool de dashers e enorme, o modelo tem mais ruido — o ganho e menor.
+**Mecanismo causal:** O algoritmo preditivo usa dados de trafego e historico de couriers. Em cidades menores (Curitiba, Porto Alegre) com menos trafego e couriers mais previssiveis, o modelo preditivo tem mais sinal e gera melhores predicoes. Em Sao Paulo, onde o trafego e caotico e o pool de couriers e enorme, o modelo tem mais ruido — o ganho e menor.
 
 **Como testar:** Analise segmentada: calcular delta por cidade e por periodo. Verificar se os ganhos sao estatisticamente significativos em cada segmento individualmente. Regressao OLS com interacao: `tempo ~ algoritmo * cidade + algoritmo * periodo + controles`.
 
@@ -123,27 +123,27 @@ O design do experimento e tao importante quanto a analise. Um experimento mal de
 
 ### Grupo A — Controle: Algoritmo FIFO por Proximidade
 
-O algoritmo FIFO e o sistema legado: no momento em que um pedido e criado no sistema, o algoritmo busca o dasher disponivel mais proximo do restaurante (em quilometros lineares) e faz a atribuicao imediatamente.
+O algoritmo FIFO e o sistema legado: no momento em que um pedido e criado no sistema, o algoritmo busca o courier disponivel mais proximo do restaurante (em quilometros lineares) e faz a atribuicao imediatamente.
 
 O problema nao e que ele e simples — e que ele ignora tres variaveis criticas:
 
-Primeiro, ele ignora o tempo de preparo do pedido. Um restaurante de sushi pode demorar 25 minutos para preparar o pedido. O FIFO envia o dasher para chegar em 8 minutos. O dasher fica parado 17 minutos na porta do restaurante. Esse tempo aparece como "tempo de coleta" nas metricas, mas na pratica e tempo de espera inutil que o dasher cobra da plataforma.
+Primeiro, ele ignora o tempo de preparo do pedido. Um restaurante de sushi pode demorar 25 minutos para preparar o pedido. O FIFO envia o courier para chegar em 8 minutos. O courier fica parado 17 minutos na porta do restaurante. Esse tempo aparece como "tempo de coleta" nas metricas, mas na pratica e tempo de espera inutil que o courier cobra da plataforma.
 
-Segundo, ele ignora o historico do dasher. Um dasher com historico de 85% de pontualidade e tratado identicamente a um dasher com 97% de pontualidade. O sistema nao aprende com o comportamento historico.
+Segundo, ele ignora o historico do courier. Um courier com historico de 85% de pontualidade e tratado identicamente a um courier com 97% de pontualidade. O sistema nao aprende com o comportamento historico.
 
-Terceiro, ele ignora o trafego em tempo real. Um dasher a 2km com trafego intenso pode chegar mais tarde que um dasher a 4km com rota livre. O FIFO usa distancia euclidiana, nao tempo estimado de deslocamento.
+Terceiro, ele ignora o trafego em tempo real. Um courier a 2km com trafego intenso pode chegar mais tarde que um courier a 4km com rota livre. O FIFO usa distancia euclidiana, nao tempo estimado de deslocamento.
 
 ### Grupo B — Tratamento: Algoritmo Preditivo
 
 O algoritmo preditivo toma a decisao de atribuicao resolvendo um problema de otimizacao com tres componentes:
 
-Componente 1 — Predicao de tempo de preparo: o modelo usa historico do restaurante (tempo medio de preparo por categoria de pedido, por horario, por dia da semana) para estimar quando o pedido ficara pronto. A atribuicao do dasher e programada para ele chegar ao restaurante dentro de uma janela de 2 minutos do momento estimado de prontidao.
+Componente 1 — Predicao de tempo de preparo: o modelo usa historico do restaurante (tempo medio de preparo por categoria de pedido, por horario, por dia da semana) para estimar quando o pedido ficara pronto. A atribuicao do courier e programada para ele chegar ao restaurante dentro de uma janela de 2 minutos do momento estimado de prontidao.
 
-Componente 2 — Score historico do dasher: cada dasher tem um score calculado nas ultimas 30 entregas (taxa de pontualidade, tempo medio de coleta, numero de pedidos recusados). O algoritmo prioriza dashers com scores mais altos para pedidos de maior valor ou em horarios de pico.
+Componente 2 — Score historico do courier: cada courier tem um score calculado nas ultimas 30 entregas (taxa de pontualidade, tempo medio de coleta, numero de pedidos recusados). O algoritmo prioriza couriers com scores mais altos para pedidos de maior valor ou em horarios de pico.
 
-Componente 3 — Estimativa de trafego em tempo real: o sistema integra dados de trafego (via API externa) para calcular o tempo estimado de deslocamento do dasher ate o restaurante e do restaurante ate o cliente. A atribuicao considera esse tempo estimado, nao a distancia euclidiana.
+Componente 3 — Estimativa de trafego em tempo real: o sistema integra dados de trafego (via API externa) para calcular o tempo estimado de deslocamento do courier ate o restaurante e do restaurante ate o cliente. A atribuicao considera esse tempo estimado, nao a distancia euclidiana.
 
-O resultado esperado e que o dasher chegue ao restaurante exatamente quando o pedido esta pronto, elimine o tempo de espera e siga diretamente para a entrega com a rota otimizada.
+O resultado esperado e que o courier chegue ao restaurante exatamente quando o pedido esta pronto, elimine o tempo de espera e siga diretamente para a entrega com a rota otimizada.
 
 ### Randomizacao
 
@@ -168,7 +168,7 @@ O teste durou 10 dias uteis (equivalente a 2 semanas de negocio). Essa duracao f
 
 Primeiro, para capturar variacao de dia da semana: sexta-feira e sabado tem volume 40% maior que segunda e terca. Um teste de apenas 3 dias pode capturar apenas uma parte do ciclo semanal e gerar vieis de horario.
 
-Segundo, para evitar o efeito novidade: as primeiras 48 horas de um novo algoritmo podem ter performance atipica porque o sistema ainda esta "aprendendo" o pool de dashers. Incluir esse periodo com peso igual ao resto do experimento pode enviesar os resultados.
+Segundo, para evitar o efeito novidade: as primeiras 48 horas de um novo algoritmo podem ter performance atipica porque o sistema ainda esta "aprendendo" o pool de couriers. Incluir esse periodo com peso igual ao resto do experimento pode enviesar os resultados.
 
 Terceiro, para atingir potencia estatistica suficiente: com ~333 pedidos/dia e split 50/50, 10 dias geram ~1.665 pedidos por grupo — acima do minimo de ~1.800 calculado para poder=80%.
 
@@ -184,7 +184,7 @@ A decisao de usar dados sinteticos em vez de dados reais de producao nao foi lim
 
 **Etica e privacidade (LGPD):** Dados reais de operacoes de delivery contam historicos de clientes (enderecos, preferencias, horarios de pedido), dados de entregadores (localizacao GPS, renda, desempenho individual) e informacoes de restaurantes (volume de vendas, horarios de pico). Compartilhar esses dados publicamente — mesmo anonimizados — viola principios de privacidade e pode configurar infringencia a LGPD.
 
-**Reprodutibilidade garantida:** Com `seed=42`, qualquer pessoa que clone o repositorio e rode `generate_doordash.py` obtera exatamente o mesmo dataset, com os mesmos numeros, as mesmas flags de qualidade e os mesmos resultados estatisticos. Isso e impossivel com dados reais que mudam continuamente.
+**Reprodutibilidade garantida:** Com `seed=42`, qualquer pessoa que clone o repositorio e rode `generate_fastdeliver.py` obtera exatamente o mesmo dataset, com os mesmos numeros, as mesmas flags de qualidade e os mesmos resultados estatisticos. Isso e impossivel com dados reais que mudam continuamente.
 
 **Controle sobre ground truth:** Em dados sinteticos, sabemos exatamente qual efeito foi injetado. O algoritmo B foi programado para ser 6% mais rapido (multiplicador_b = 0.94). Isso nos permite validar que a analise detectou o efeito correto — um teste de sanidade impossivel com dados reais onde o "efeito verdadeiro" e desconhecido.
 
@@ -194,9 +194,9 @@ A decisao de usar dados sinteticos em vez de dados reais de producao nao foi lim
 
 O schema foi projetado para refletir a complexidade real de um sistema de delivery:
 
-**Grupo 1 — Identificadores (5 colunas):** order_id, customer_id, restaurant_id, delivery_id, dasher_id. Chaves primarias e estrangeiras que simulam o sistema de microsservicos: servico de pedidos, servico de clientes, servico de restaurantes, servico de delivery, servico de dashers — cada um com seu proprio namespace de IDs.
+**Grupo 1 — Identificadores (5 colunas):** order_id, customer_id, restaurant_id, delivery_id, courier_id. Chaves primarias e estrangeiras que simulam o sistema de microsservicos: servico de pedidos, servico de clientes, servico de restaurantes, servico de delivery, servico de couriers — cada um com seu proprio namespace de IDs.
 
-**Grupo 2 — Temporal (4 colunas):** created_at, dasher_assigned_at, pickup_at, delivered_at. Os quatro timestamps principais do fluxo de negocio, mais os 7 stage timestamps que rastreiam cada micro-etapa.
+**Grupo 2 — Temporal (4 colunas):** created_at, courier_assigned_at, pickup_at, delivered_at. Os quatro timestamps principais do fluxo de negocio, mais os 7 stage timestamps que rastreiam cada micro-etapa.
 
 **Grupo 3 — Negocio (3 colunas):** ab_group (A ou B), status (delivered/cancelled/in_progress), total_amount_usd. O valor do pedido foi gerado com distribuicao log-normal (media ~$25, desvio padrao ~$12) para refletir a assimetria real: a maioria dos pedidos e de valor medio, mas ha uma cauda de pedidos de alto valor.
 
@@ -206,23 +206,23 @@ O schema foi projetado para refletir a complexidade real de um sistema de delive
 
 **Grupo 6 — Colunas Derivadas (3 colunas):** delivery_duration_minutes (calculada de stage_1 a stage_7), hour_of_day (0-23), month (Jan/Feb/Mar), delivery_stage_bucket (periodo do dia).
 
-**Grupo 7 — Flags de Qualidade (4 colunas booleanas):** has_duplicate_flag, has_timestamp_issue_flag, has_missing_dasher_flag, has_outlier_flag. Cada flag indica um problema especifico, permitindo que o pipeline downstream filtre de forma granular.
+**Grupo 7 — Flags de Qualidade (4 colunas booleanas):** has_duplicate_flag, has_timestamp_issue_flag, has_missing_courier_flag, has_outlier_flag. Cada flag indica um problema especifico, permitindo que o pipeline downstream filtre de forma granular.
 
 ### Os 4 Problemas de Qualidade e Sua Motivacao em Producao
 
 **Duplicatas (2%, 200 pedidos):** Em sistemas de pagamento distribuidos, a entrega de eventos nao e garantida uma unica vez (at-most-once vs at-least-once delivery). Quando um webhook de confirmacao de pagamento nao recebe ACK (acknowledgment) do servidor de destino dentro do timeout, o sistema reenvia o evento. Se o servidor de destino ja processou o evento mas o ACK foi perdido na rede, o evento e processado duas vezes — gerando uma duplicata. Sistemas de producao robustos implementam idempotencia usando uma chave idempotency_key, mas sistemas legados frequentemente nao tem essa protecao.
 
-**Timestamps fora de ordem (1%, 97 pedidos):** Em arquiteturas de microsservicos, cada servico escreve em seu proprio banco de dados com seu proprio clock. Clock skew (desincronizacao de relogios entre servidores) de ate 200ms e comum mesmo com NTP. Quando eventos de servicos diferentes sao consolidados em um data warehouse, mensagens que chegaram depois podem ter timestamp anterior ao da mensagem que chegou antes. Por exemplo: o evento "dasher_assigned" pode ter timestamp 14:30:05.100 enquanto o evento "order_placed" que o precedeu tem timestamp 14:30:05.300 — porque o servico de dasher tem o relogio 200ms adiantado.
+**Timestamps fora de ordem (1%, 97 pedidos):** Em arquiteturas de microsservicos, cada servico escreve em seu proprio banco de dados com seu proprio clock. Clock skew (desincronizacao de relogios entre servidores) de ate 200ms e comum mesmo com NTP. Quando eventos de servicos diferentes sao consolidados em um data warehouse, mensagens que chegaram depois podem ter timestamp anterior ao da mensagem que chegou antes. Por exemplo: o evento "courier_assigned" pode ter timestamp 14:30:05.100 enquanto o evento "order_placed" que o precedeu tem timestamp 14:30:05.300 — porque o servico de courier tem o relogio 200ms adiantado.
 
-**Dasher nao atribuido (1%, 97 pedidos):** Em horarios de alta demanda, o algoritmo de alocacao pode esgotar o timeout de busca (normalmente 30 segundos) sem encontrar um dasher disponivel dentro do raio configurado. O pedido entra em um estado de "orfao": confirmado pelo restaurante, mas sem entregador. Esses pedidos ficam em fila ate um dasher ficar disponivel ou ate o cliente cancelar. No dado bruto, dasher_id e NULL — o que causa problemas em JOINs e calculos de tempo de atribuicao.
+**Courier nao atribuido (1%, 97 pedidos):** Em horarios de alta demanda, o algoritmo de alocacao pode esgotar o timeout de busca (normalmente 30 segundos) sem encontrar um courier disponivel dentro do raio configurado. O pedido entra em um estado de "orfao": confirmado pelo restaurante, mas sem entregador. Esses pedidos ficam em fila ate um courier ficar disponivel ou ate o cliente cancelar. No dado bruto, courier_id e NULL — o que causa problemas em JOINs e calculos de tempo de atribuicao.
 
-**Outliers acima de 120 minutos (1%, 97 pedidos):** Entregas com mais de 2 horas sao eventos extraordinarios que nao representam o fluxo operacional normal. As causas em producao incluem: dasher com problema mecanico no veiculo (moto fura, carro quebra), pedido perdido no restaurante (restaurante nao encontra o pedido mesmo apos dasher chegar), cancelamento parcial onde o pedido tecnicamente nao e cancelado mas fica em limbo, ou erros de geolocalicacao onde o GPS marca entrega no endereco errado. Esses registros sao validos para analises de excepcao, mas devem ser removidos do calculo de tempo medio de entrega para nao distorcer as metricas principais.
+**Outliers acima de 120 minutos (1%, 97 pedidos):** Entregas com mais de 2 horas sao eventos extraordinarios que nao representam o fluxo operacional normal. As causas em producao incluem: courier com problema mecanico no veiculo (moto fura, carro quebra), pedido perdido no restaurante (restaurante nao encontra o pedido mesmo apos courier chegar), cancelamento parcial onde o pedido tecnicamente nao e cancelado mas fica em limbo, ou erros de geolocalicacao onde o GPS marca entrega no endereco errado. Esses registros sao validos para analises de excepcao, mas devem ser removidos do calculo de tempo medio de entrega para nao distorcer as metricas principais.
 
 ---
 
 ## Secao 5: Pipeline de Dados — Passo a Passo
 
-### 5.1 Geracao dos Dados (generate_doordash.py)
+### 5.1 Geracao dos Dados (generate_fastdeliver.py)
 
 O script de geracao usa distribuicoes estatisticas reais para criar um dataset verossimil:
 
@@ -252,7 +252,7 @@ Isso simula uma degradacao operacional real: em Janeiro a plataforma estava saud
 # Passo 1: Gera dataset limpo com seed=42
 # Passo 2: Duplica 200 registros aleatorios (2% de duplicatas)
 # Passo 3: Embaralha timestamps de 97 registros (clock skew)
-# Passo 4: Remove dasher_id de 97 registros (atribuicao falhada)
+# Passo 4: Remove courier_id de 97 registros (atribuicao falhada)
 # Passo 5: Infla delivery_time de 97 registros para >120min (outliers)
 ```
 
@@ -264,9 +264,9 @@ O pipeline de limpeza segue o principio de "sem informacao perdida" — cada dec
 
 **Por que reordenar timestamps com np.sort em vez de dropar o registro:** Dropar o registro significa perder dados que sao validos — apenas o registro chegou fora de ordem, nao o evento em si. Interpolar timestamps entre etapas e arriscado porque assume linearidade entre eventos que nao sao lineares. Reordenar assume apenas que as etapas ocorreram na sequencia correta, mesmo que os registros tenham chegado fora de ordem — uma suposicao muito mais conservadora e defensavel.
 
-**Por que usar a string "UNASSIGNED" em vez de NULL para dashers ausentes:** NULL em SQL tem comportamento especial: propaga para qualquer calculo (avg(NULL) = NULL, NULL != NULL e NULL = NULL sao ambos NULL). Uma string explicita "UNASSIGNED" permite filtrar, agrupar e identificar esses casos sem comportamento imprevisivel. Alem disso, deixa claro para qualquer analista downstream que esse dasher_id nao e um dado faltante por erro — e um estado de negocio valido.
+**Por que usar a string "UNASSIGNED" em vez de NULL para couriers ausentes:** NULL em SQL tem comportamento especial: propaga para qualquer calculo (avg(NULL) = NULL, NULL != NULL e NULL = NULL sao ambos NULL). Uma string explicita "UNASSIGNED" permite filtrar, agrupar e identificar esses casos sem comportamento imprevisivel. Alem disso, deixa claro para qualquer analista downstream que esse courier_id nao e um dado faltante por erro — e um estado de negocio valido.
 
-**Por que threshold fixo de 120 minutos em vez de IQR:** O metodo IQR (Q3 + 1.5 x IQR) e um criterio estatistico genericamente util, mas em distribuicoes log-normais (como tempo de entrega) ele tende a remover 7-10% dos dados, incluindo entregas longas mas legitimas (pedidos distantes, condicoes climaticas adversas). Um threshold de 120 minutos e o SLA maximo de negocio da DoorDash — acima disso, o cliente tem direito a reembolso automatico. Usar o criterio de negocio e mais interpretavel, auditavel e defensavel para um stakeholder nao-tecnico.
+**Por que threshold fixo de 120 minutos em vez de IQR:** O metodo IQR (Q3 + 1.5 x IQR) e um criterio estatistico genericamente util, mas em distribuicoes log-normais (como tempo de entrega) ele tende a remover 7-10% dos dados, incluindo entregas longas mas legitimas (pedidos distantes, condicoes climaticas adversas). Um threshold de 120 minutos e o SLA maximo de negocio da FastDeliver — acima disso, o cliente tem direito a reembolso automatico. Usar o criterio de negocio e mais interpretavel, auditavel e defensavel para um stakeholder nao-tecnico.
 
 **Resultado do pipeline de limpeza:**
 
@@ -347,7 +347,7 @@ Por convencao de Cohen: d=0.2 e pequeno, d=0.5 e medio, d=0.8 e grande. Nosso d=
 | Brasilia | 37.92 | 35.84 | -2.08 | -5.49% |
 | Sao Paulo | 37.70 | 35.97 | -1.73 | -4.59% |
 
-Sao Paulo teve o menor ganho (-4.59%), provavelmente porque a maior densidade de trafego e pool de dashers adiciona ruido ao modelo preditivo. Isso e um sinal de que o algoritmo pode precisar de ajuste especifico para mercados de alta densidade.
+Sao Paulo teve o menor ganho (-4.59%), provavelmente porque a maior densidade de trafego e pool de couriers adiciona ruido ao modelo preditivo. Isso e um sinal de que o algoritmo pode precisar de ajuste especifico para mercados de alta densidade.
 
 **B vence em todos os 5 periodos do dia:**
 
@@ -418,7 +418,7 @@ Pagina 4 — Impacto Financeiro: os inputs interativos (pedidos por dia, custo p
 O algoritmo FIFO foi substituido pelo preditivo e o resultado foi uma reducao estatisticamente significativa de 2.44 minutos (6.4%) no tempo medio de entrega. p-value ≈ 0.000, t=14.0, IC 95% [-2.71, -2.17]. O experimento confirma que a mudanca de algoritmo, e nao outro fator (sazonalidade, perfil de cliente, regiao), e responsavel pela diferenca.
 
 **H2: A etapa de Rota e a mais critica — CONFIRMADA**
-Analise por etapa mostra que a Rota teve o maior ganho absoluto em resposta ao algoritmo B: -1.15 min (-6.4%), seguida de Preparo (-0.73 min) e Atribuicao (-0.50 min). O algoritmo preditivo impacta mais fortemente a etapa de Rota porque ao programar a chegada do dasher no momento certo, o dasher pode partir do restaurante com um itinerario mais otimizado em vez de correr para compensar tempo perdido em espera.
+Analise por etapa mostra que a Rota teve o maior ganho absoluto em resposta ao algoritmo B: -1.15 min (-6.4%), seguida de Preparo (-0.73 min) e Atribuicao (-0.50 min). O algoritmo preditivo impacta mais fortemente a etapa de Rota porque ao programar a chegada do courier no momento certo, o courier pode partir do restaurante com um itinerario mais otimizado em vez de correr para compensar tempo perdido em espera.
 
 **H3: Reducao de pelo menos 5% — CONFIRMADA**
 O resultado de -6.4% supera o MDE de 5%. O intervalo de confianca 95% de [-2.71, -2.17] esta inteiramente abaixo de -1.9 min (o limiar de 5%), confirmando que mesmo no cenario pessimista o efeito supera o threshold.
@@ -430,13 +430,13 @@ Analise segmentada confirma: B vence em todas as 6 cidades (de -4.59% em Sao Pau
 
 **Plano de rollout em 3 semanas:**
 
-- Semana 1 — 25% do trafego: monitorar cancelamentos (alerta se > 12%), dasher_score medio (alerta se cai > 5%), e tempo de atribuicao (alerta se > 5 min). Foco em deteccao precoce de efeitos adversos.
+- Semana 1 — 25% do trafego: monitorar cancelamentos (alerta se > 12%), courier_score medio (alerta se cai > 5%), e tempo de atribuicao (alerta se > 5 min). Foco em deteccao precoce de efeitos adversos.
 - Semana 2 — 50% do trafego: validar que o ganho de -6.4% persiste fora do ambiente controlado do experimento (sem Hawthorne effect). Monitorar NPS de restaurantes (entregadores chegando no momento certo afeta positivamente a avaliacao do restaurante).
 - Semana 3 — 100% do trafego: rollout completo. Manter monitoramento por 30 dias adicionais. Reportar impacto financeiro real vs projetado.
 
 **Guardrails (o que monitorar continuamente):**
 - Taxa de cancelamento: alerta se > 12% (ja estava crescendo durante o experimento — tendencia preocupante independente do A/B)
-- dasher_score medio: alerta se cai > 5% (novo algoritmo pode ser mais exigente com dashers que tem historico variavel)
+- courier_score medio: alerta se cai > 5% (novo algoritmo pode ser mais exigente com couriers que tem historico variavel)
 - Tempo de atribuicao: alerta se > 5 min (o algoritmo preditivo e mais computacionalmente intenso; se o servico de predicao ficar lento, o impacto e imediato na atribuicao)
 - NPS de restaurantes: alerta se cai (entregadores chegando muito cedo ou muito tarde impacta a experiencia do restaurante com a plataforma)
 
@@ -444,11 +444,11 @@ Analise segmentada confirma: B vence em todas as 6 cidades (de -4.59% em Sao Pau
 
 **Dataset sintetico:** Nao captura sazonalidade real (feriados, eventos locais, clima), variacao de densidade urbana real, ou comportamento especifico de cidades brasileiras.
 
-**Duracao de 10 dias:** Pode nao capturar completamente o "efeito novidade" (dashers podem se comportar diferente quando o algoritmo muda) ou o efeito de aprendizado do modelo preditivo (que melhora com mais dados ao longo do tempo).
+**Duracao de 10 dias:** Pode nao capturar completamente o "efeito novidade" (couriers podem se comportar diferente quando o algoritmo muda) ou o efeito de aprendizado do modelo preditivo (que melhora com mais dados ao longo do tempo).
 
 **6 cidades:** Sao Paulo teve o menor ganho (-4.59%). Em uma operacao real com dezenas de cidades, algumas podem nao se beneficiar do algoritmo preditivo da mesma forma — o rollout precisaria de analise cidade por cidade.
 
-**ROI baseado em premissas:** O calculo de ROI usa R$0.50/min como custo operacional de dasher e R$38.50 como ticket medio. Esses numeros sao estimativas. O ROI real pode ser 30% maior ou menor dependendo dos numeros reais de custo da operacao.
+**ROI baseado em premissas:** O calculo de ROI usa R$0.50/min como custo operacional de courier e R$38.50 como ticket medio. Esses numeros sao estimativas. O ROI real pode ser 30% maior ou menor dependendo dos numeros reais de custo da operacao.
 
 ---
 
