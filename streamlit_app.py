@@ -11,6 +11,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from scipy import stats
 import os
+import subprocess
+from pathlib import Path
 
 from docs.translations import TRANSLATIONS
 
@@ -64,6 +66,21 @@ STAGE_COLS = [
 # ---------------------------------------------------------------------------
 # Carregamento de dados
 # ---------------------------------------------------------------------------
+def _ensure_data() -> None:
+    """Gera o CSV se nao existir (primeiro run no Streamlit Cloud)."""
+    if not Path(CSV_PATH).exists():
+        base = Path(__file__).parent
+        with st.spinner("Generating data for first run..."):
+            subprocess.run(
+                ["python", str(base / "gen" / "data" / "generate_fastdeliver.py")],
+                check=True,
+            )
+            subprocess.run(
+                ["python", str(base / "gen" / "data" / "eda_cleaning.py")],
+                check=True,
+            )
+
+
 @st.cache_data(show_spinner=False)
 def load_data() -> pd.DataFrame:
     """Carrega dados via DuckDB (fct_entregas) ou CSV como fallback."""
@@ -81,6 +98,7 @@ def load_data() -> pd.DataFrame:
             pass
 
     # Fallback: CSV
+    _ensure_data()
     df = pd.read_csv(CSV_PATH, parse_dates=["created_at"] + STAGE_COLS)
 
     # Calcular duracoes das etapas
@@ -111,6 +129,7 @@ def load_data() -> pd.DataFrame:
 @st.cache_data(show_spinner=False)
 def load_raw_csv() -> pd.DataFrame:
     """Carrega CSV original para metricas que nao estao no DuckDB."""
+    _ensure_data()
     df = pd.read_csv(CSV_PATH, parse_dates=["created_at"])
     return df
 
