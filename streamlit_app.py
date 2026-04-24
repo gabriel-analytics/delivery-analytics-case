@@ -55,10 +55,10 @@ ETAPA_KEY_MAP = {
 STAGE_COLS = [
     "stage_1_order_placed_at",
     "stage_2_restaurant_confirmed_at",
-    "stage_3_courier_assigned_at",
-    "stage_4_courier_arrived_restaurant_at",
+    "stage_3_dasher_assigned_at",
+    "stage_4_dasher_arrived_restaurant_at",
     "stage_5_order_picked_up_at",
-    "stage_6_courier_near_customer_at",
+    "stage_6_dasher_near_customer_at",
     "stage_7_delivered_at",
 ]
 
@@ -107,15 +107,15 @@ def load_data() -> pd.DataFrame:
     ).dt.total_seconds() / 60
 
     df["duracao_preparo_min"] = (
-        df["stage_4_courier_arrived_restaurant_at"] - df["stage_2_restaurant_confirmed_at"]
+        df["stage_4_dasher_arrived_restaurant_at"] - df["stage_2_restaurant_confirmed_at"]
     ).dt.total_seconds() / 60
 
     df["duracao_atribuicao_min"] = (
-        df["stage_3_courier_assigned_at"] - df["stage_1_order_placed_at"]
+        df["stage_3_dasher_assigned_at"] - df["stage_1_order_placed_at"]
     ).dt.total_seconds() / 60
 
     df["duracao_coleta_min"] = (
-        df["stage_5_order_picked_up_at"] - df["stage_4_courier_arrived_restaurant_at"]
+        df["stage_5_order_picked_up_at"] - df["stage_4_dasher_arrived_restaurant_at"]
     ).dt.total_seconds() / 60
 
     df["duracao_rota_min"] = (
